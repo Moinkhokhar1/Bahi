@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:signature/signature.dart';
-import '../theme.dart';
+import '../../theme.dart';
 
 /// Shows a signature-capture bottom sheet. Returns a base64-encoded PNG
 /// string on save, `''` if the user tapped "skip" (when [skipLabel] is

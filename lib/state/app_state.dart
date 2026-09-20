@@ -205,8 +205,8 @@ class AppState extends ChangeNotifier {
     invoices.add(inv);
     await _dbi.insertInvoice(inv);
     await _dbi.saveSettings(settings);
+    final paidVal = shopId.isEmpty ? c.total : min(c.total, max(0, num_(paidNow))).toDouble();
 
-    final paidVal = shopId.isEmpty ? c.total : min(c.total, max(0, num_(paidNow)));
     if (paidVal > 0) {
       final pay = Payment(
         id: uid(),
@@ -218,6 +218,7 @@ class AppState extends ChangeNotifier {
         mode: mode,
         note: 'With bill $no',
       );
+
       payments.add(pay);
       await _dbi.insertPayment(pay);
     }

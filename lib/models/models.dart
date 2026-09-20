@@ -7,7 +7,7 @@ double num_(dynamic v) {
   return double.tryParse(s) ?? 0;
 }
 
-double round2(double n) => (n * 100).round() / 100;
+double round2(double n) => ((n * 100).round() / 100).toDouble();
 
 class AppSettings {
   String bizName;
