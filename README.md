@@ -282,10 +282,10 @@ These packages provide the application's state management, local persistence, fi
 > Add application screenshots here to make the repository easier to understand.
 
 ```markdown
-![Dashboard](screenshots/home_screen.png)
-![Inventory](screenshots/inventory_screen.png)
-![Billing](screenshots/bills_screen.png)
-![Delivery](screenshots/shop_list_screen.png)
+![Dashboard](screenshots/home_screen.PNG)
+![Inventory](screenshots/inventory_screen.PNG)
+![Billing](screenshots/bills_screen.PNG)
+![Delivery](screenshots/shop_list_screen.PNG)
 ```
 
 Recommended repository structure:
