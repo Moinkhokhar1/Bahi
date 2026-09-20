@@ -279,12 +279,13 @@ These packages provide the application's state management, local persistence, fi
 
 ## 📸 Screenshots
 
-```markdown
-![Dashboard](screenshots/home_screen.PNG)
-![Inventory](screenshots/inventory_screen.PNG)
-![Billing](screenshots/bills_screen.PNG)
-![Delivery](screenshots/shop_list_screen.PNG)
-```
+| Home | Send Money | Pending | History |
+|------|------------|---------|---------|
+| ![Dashboard](screenshots/home_screen.PNG)|
+|![Inventory](screenshots/inventory_screen.PNG)|
+|![Billing](screenshots/bills_screen.PNG)|
+|![Delivery](screenshots/shop_list_screen.PNG)|
+
 
 Recommended repository structure:
 
