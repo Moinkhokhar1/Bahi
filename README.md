@@ -279,8 +279,6 @@ These packages provide the application's state management, local persistence, fi
 
 ## 📸 Screenshots
 
-> Add application screenshots here to make the repository easier to understand.
-
 ```markdown
 ![Dashboard](screenshots/home_screen.PNG)
 ![Inventory](screenshots/inventory_screen.PNG)
