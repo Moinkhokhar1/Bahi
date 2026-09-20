@@ -32,6 +32,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/icon/bill_icon.png
+    - assets/icon/icon.png
+    - assets/icon/icon_foreground.png
     - assets/fonts/
     - assets/fonts/NotoSans-Regular.ttf
     - assets/fonts/NotoSans-Bold.ttf

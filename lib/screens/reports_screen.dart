@@ -562,17 +562,29 @@ class _ReportsScreenState extends State<ReportsScreen> {
         i.status == 'delivered' ? 'Delivered' : 'Pending',
       ].join(','));
     }
+    File? file;
     try {
       final dir = await getTemporaryDirectory();
       final label = _period == _Period.all ? 'all-time' : '${from}_to_$to';
-      final file = File('${dir.path}/bahi-bills-$label.csv');
+      file = File('${dir.path}/bahi-bills-$label.csv');
       await file.writeAsString(sb.toString());
+    } catch (e, st) {
+      debugPrint('CSV write failed: $e\n$st');
+      if (context.mounted) toastMsg(context, 'Could not save the file: $e');
+      return;
+    }
+
+    try {
+      final box = context.findRenderObject() as RenderBox?;
       await Share.shareXFiles(
         [XFile(file.path, mimeType: 'text/csv')],
         subject: 'Bills ${_rangeText(from, to)}',
+        // required on iPad, harmless elsewhere
+        sharePositionOrigin: box == null ? null : box.localToGlobal(Offset.zero) & box.size,
       );
-    } catch (_) {
-      if (context.mounted) toastMsg(context, 'Could not create the export');
+    } catch (e, st) {
+      debugPrint('Share failed: $e\n$st');
+      if (context.mounted) toastMsg(context, 'Could not open the share sheet: $e');
     }
   }
 }

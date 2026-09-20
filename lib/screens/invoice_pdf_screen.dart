@@ -48,6 +48,10 @@ Future<Uint8List> buildInvoicePdf(AppState app, Invoice inv, {required bool chal
     final s = app.sigOf(inv.recv!.sig);
     if (s.isNotEmpty) recvImg = pw.MemoryImage(base64Decode(s));
   }
+  final bahiIconData = await rootBundle.load('assets/icon/bill_icon.png');
+
+  final bahiIcon = pw.MemoryImage(bahiIconData.buffer.asUint8List(),
+  );
 
   final doc = pw.Document(theme: await _loadPdfTheme());
 
@@ -107,53 +111,119 @@ Future<Uint8List> buildInvoicePdf(AppState app, Invoice inv, {required bool chal
             child: pw.Text('CANCELLED',
                 style: pw.TextStyle(color: const PdfColor.fromInt(0xFFC43636), fontWeight: pw.FontWeight.bold)),
           ),
-        pw.Text(st.bizName, style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: _ink)),
-        if (st.address.isNotEmpty) pw.Text(st.address, style: const pw.TextStyle(fontSize: 9.5, color: _muted)),
-        pw.Text(
-          [
-            if (st.phone.isNotEmpty) 'Phone ${st.phone}',
-            if (st.gstin.isNotEmpty && gst) 'GSTIN ${st.gstin}',
-            if (st.state.isNotEmpty) stateName(st.state),
-          ].join('    '),
-          style: const pw.TextStyle(fontSize: 9.5, color: _muted),
-        ),
-        pw.SizedBox(height: 10),
-        pw.Container(
-          alignment: pw.Alignment.center,
-          padding: const pw.EdgeInsets.symmetric(vertical: 6),
-          decoration: const pw.BoxDecoration(border: pw.Border(top: pw.BorderSide(color: _line), bottom: pw.BorderSide(color: _line))),
-          child: pw.Text(title + (challan || !gst ? '' : ' (Original for recipient)'),
-              style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold, color: _ink)),
-        ),
-        pw.SizedBox(height: 10),
+        // pw.Text(st.bizName, style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: _ink)),
+        // if (st.address.isNotEmpty) pw.Text(st.address, style: const pw.TextStyle(fontSize: 9.5, color: _muted)),
+        // pw.Text(
+        //   [
+        //     if (st.phone.isNotEmpty) 'Phone ${st.phone}',
+        //     if (st.gstin.isNotEmpty && gst) 'GSTIN ${st.gstin}',
+        //     if (st.state.isNotEmpty) stateName(st.state),
+        //   ].join('    '),
+        //   style: const pw.TextStyle(fontSize: 9.5, color: _muted),
+        // ),
+        // pw.SizedBox(height: 10),
+        // pw.Container(
+        //   alignment: pw.Alignment.center,
+        //   padding: const pw.EdgeInsets.symmetric(vertical: 6),
+        //   decoration: const pw.BoxDecoration(border: pw.Border(top: pw.BorderSide(color: _line), bottom: pw.BorderSide(color: _line))),
+        //   child: pw.Text(title + (challan || !gst ? '' : ' (Original for recipient)'),
+        //       style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold, color: _ink)),
+        // ),
+        // pw.SizedBox(height: 10),
+        // pw.Row(
+        //   crossAxisAlignment: pw.CrossAxisAlignment.start,
+        //   children: [
+        //     pw.Expanded(
+        //       child: pw.Column(
+        //         crossAxisAlignment: pw.CrossAxisAlignment.start,
+        //         children: [
+        //           pw.Text('Bill to', style: pw.TextStyle(fontSize: 9.5, fontWeight: pw.FontWeight.bold, color: _ink)),
+        //           pw.Text(pt.name, style: const pw.TextStyle(fontSize: 10.5, color: _ink)),
+        //           if (pt.address.isNotEmpty) pw.Text(pt.address, style: const pw.TextStyle(fontSize: 9, color: _muted)),
+        //           pw.Text(
+        //             [
+        //               if (pt.gstin.isNotEmpty) 'GSTIN ${pt.gstin}',
+        //               if (pt.phone.isNotEmpty) 'Phone ${pt.phone}',
+        //             ].join('   '),
+        //             style: const pw.TextStyle(fontSize: 9, color: _muted),
+        //           ),
+        //           if (gst && pt.state.isNotEmpty)
+        //             pw.Text('Place of supply: ${stateName(pt.state)} (${pt.state})',
+        //                 style: const pw.TextStyle(fontSize: 9, color: _muted)),
+        //         ],
+        //       ),
+        //     ),
+        //     pw.Column(
+        //       crossAxisAlignment: pw.CrossAxisAlignment.end,
+        //       children: [
+        //         pw.Text(inv.no, style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 11, color: _ink)),
+        //         pw.Text(fdate(inv.date), style: const pw.TextStyle(fontSize: 9.5, color: _muted)),
+        //       ],
+        //     ),
+        //   ],
+        // ),
+
         pw.Row(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
+            // Left: Business information
             pw.Expanded(
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  pw.Text('Bill to', style: pw.TextStyle(fontSize: 9.5, fontWeight: pw.FontWeight.bold, color: _ink)),
-                  pw.Text(pt.name, style: const pw.TextStyle(fontSize: 10.5, color: _ink)),
-                  if (pt.address.isNotEmpty) pw.Text(pt.address, style: const pw.TextStyle(fontSize: 9, color: _muted)),
+                  pw.Text(
+                    st.bizName,
+                    style: pw.TextStyle(
+                      fontSize: 18,
+                      fontWeight: pw.FontWeight.bold,
+                      color: _ink,
+                    ),
+                  ),
+
+                  if (st.address.isNotEmpty)
+                    pw.Text(
+                      st.address,
+                      style: const pw.TextStyle(
+                        fontSize: 9.5,
+                        color: _muted,
+                      ),
+                    ),
+
                   pw.Text(
                     [
-                      if (pt.gstin.isNotEmpty) 'GSTIN ${pt.gstin}',
-                      if (pt.phone.isNotEmpty) 'Phone ${pt.phone}',
-                    ].join('   '),
-                    style: const pw.TextStyle(fontSize: 9, color: _muted),
+                      if (st.phone.isNotEmpty) 'Phone ${st.phone}',
+                      if (st.gstin.isNotEmpty && gst) 'GSTIN ${st.gstin}',
+                      if (st.state.isNotEmpty) stateName(st.state),
+                    ].join('    '),
+                    style: const pw.TextStyle(
+                      fontSize: 9.5,
+                      color: _muted,
+                    ),
                   ),
-                  if (gst && pt.state.isNotEmpty)
-                    pw.Text('Place of supply: ${stateName(pt.state)} (${pt.state})',
-                        style: const pw.TextStyle(fontSize: 9, color: _muted)),
                 ],
               ),
             ),
+
+            // Right: Bahi branding
             pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.end,
               children: [
-                pw.Text(inv.no, style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 11, color: _ink)),
-                pw.Text(fdate(inv.date), style: const pw.TextStyle(fontSize: 9.5, color: _muted)),
+                pw.Image(
+                  bahiIcon,
+                  width: 42,
+                  height: 42,
+                  fit: pw.BoxFit.contain,
+                ),
+
+                pw.SizedBox(height: 3),
+
+                pw.Text(
+                  'Powered by Bahi',
+                  style: const pw.TextStyle(
+                    fontSize: 7.5,
+                    color: _muted,
+                  ),
+                ),
               ],
             ),
           ],
