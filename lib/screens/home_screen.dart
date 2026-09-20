@@ -123,17 +123,46 @@ class HomeScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Tile(icon: Icons.currency_rupee_rounded, label: 'Receive payment', onTap: () => openPaymentSheet(context)),
+                  Expanded(
+                    child: Tile(
+                      icon: Icons.currency_rupee_rounded,
+                      label: 'Receive',
+                      onTap: () => openPaymentSheet(context),
+                    ),
+                  ),
                   const SizedBox(width: 10),
-                  Tile(icon: Icons.inventory_2_outlined, label: 'Stock in', onTap: () => openStockSheet(context)),
+
+                  Expanded(
+                    child: Tile(
+                      icon: Icons.inventory_2_outlined,
+                      label: 'Stock in',
+                      onTap: () => openStockSheet(context),
+                    ),
+                  ),
                   const SizedBox(width: 10),
-                  Tile(icon: Icons.storefront_outlined, label: 'Add shop', onTap: () => openShopSheet(context)),
+
+                  Expanded(
+                    child: Tile(
+                      icon: Icons.storefront_outlined,
+                      label: 'Add shop',
+                      onTap: () => openShopSheet(context),
+                    ),
+                  ),
                   const SizedBox(width: 10),
-                  Tile(
+
+                  Expanded(
+                    child: Tile(
                       icon: Icons.bar_chart_rounded,
                       label: 'Reports',
-                      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ReportsScreen()))),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const ReportsScreen(),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

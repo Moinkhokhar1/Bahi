@@ -1,4 +1,4 @@
-name: erpsystem
+name: Bahi
 description: Bills, stock and deliveries for shop-to-shop businesses.
 publish_to: 'none'
 version: 1.0.0+1
@@ -27,6 +27,32 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.1
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/fonts/
+    - assets/fonts/NotoSans-Regular.ttf
+    - assets/fonts/NotoSans-Bold.ttf
+    - assets/fonts/NotoSans-Italic.ttf
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/icon.png"
+  remove_alpha_ios: true
+  adaptive_icon_background: "#F3AB00"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  web:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    background_color: "#2743C4"
+    theme_color: "#2743C4"
+  windows:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    icon_size: 256
+  macos:
+    generate: true
+    image_path: "assets/icon/icon.png"

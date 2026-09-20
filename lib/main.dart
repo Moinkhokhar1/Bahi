@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import 'models/models.dart';
 import 'root_shell/root_shell.dart';
+import 'screens/splash_screen.dart';
 import 'state/app_state.dart';
 import 'theme.dart';
 import 'utils/format.dart' hide round2;
@@ -53,23 +54,45 @@ class _AppGateState extends State<_AppGate> {
   /// set at launch. Setting a PIN later in the same session doesn't lock you out.
   bool? _unlocked;
 
+  /// The animated splash always plays through, even if the data loads faster.
+  bool _splashDone = false;
+
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
-    if (!app.loaded) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-    _unlocked ??= app.settings.pin.isEmpty;
 
-    if (app.settings.bizName.trim().isEmpty) return const _WelcomeScreen();
-    if (_unlocked == false) {
-      return _LockScreen(
-        pin: app.settings.pin,
-        bizName: app.settings.bizName,
-        onUnlock: () => setState(() => _unlocked = true),
+    final String stage;
+    final Widget page;
+    if (!app.loaded || !_splashDone) {
+      stage = 'splash';
+      page = BahiSplash(
+        onFinished: () {
+          if (mounted) setState(() => _splashDone = true);
+        },
       );
+    } else {
+      _unlocked ??= app.settings.pin.isEmpty;
+      if (app.settings.bizName.trim().isEmpty) {
+        stage = 'welcome';
+        page = const _WelcomeScreen();
+      } else if (_unlocked == false) {
+        stage = 'lock';
+        page = _LockScreen(
+          pin: app.settings.pin,
+          bizName: app.settings.bizName,
+          onUnlock: () => setState(() => _unlocked = true),
+        );
+      } else {
+        stage = 'app';
+        page = const RootShell();
+      }
     }
-    return const RootShell();
+
+    // Short cross-fade between splash -> welcome/lock/app.
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 400),
+      child: KeyedSubtree(key: ValueKey(stage), child: page),
+    );
   }
 }
 

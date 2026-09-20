@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.erpsystem"
+    namespace = "com.example.bahi"
 //    compileSdk = flutter.compileSdkVersion
     compileSdk = 36
     ndkVersion = flutter.ndkVersion

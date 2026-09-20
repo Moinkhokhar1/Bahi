@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import '../../models/models.dart';
@@ -9,6 +10,24 @@ import '../../utils/format.dart';
 const _ink = PdfColor.fromInt(0xFF131A35);
 const _muted = PdfColor.fromInt(0xFF5A6383);
 const _line = PdfColor.fromInt(0xFFDDE1EE);
+
+final _fontBytes = <String, ByteData>{};
+
+/// The PDF default font (Helvetica) has no glyph for the rupee sign or the
+/// minus sign, so they print as a box. Noto Sans has both. The font files are
+/// read once and reused; the font objects are built per document.
+Future<pw.ThemeData> _loadPdfTheme() async {
+  Future<pw.Font> font(String file) async {
+    final data = _fontBytes[file] ??= await rootBundle.load('assets/fonts/$file');
+    return pw.Font.ttf(data);
+  }
+
+  return pw.ThemeData.withFont(
+    base: await font('NotoSans-Regular.ttf'),
+    bold: await font('NotoSans-Bold.ttf'),
+    italic: await font('NotoSans-Italic.ttf'),
+  );
+}
 
 Future<Uint8List> buildInvoicePdf(AppState app, Invoice inv, {required bool challan}) async {
   final st = app.settings;
@@ -30,7 +49,7 @@ Future<Uint8List> buildInvoicePdf(AppState app, Invoice inv, {required bool chal
     if (s.isNotEmpty) recvImg = pw.MemoryImage(base64Decode(s));
   }
 
-  final doc = pw.Document();
+  final doc = pw.Document(theme: await _loadPdfTheme());
 
   pw.Widget cell(String t, {bool bold = false, pw.TextAlign align = pw.TextAlign.left}) => pw.Padding(
     padding: const pw.EdgeInsets.symmetric(vertical: 5, horizontal: 4),
