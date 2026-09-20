@@ -386,11 +386,18 @@ It helps support continued development and makes the project easier for other de
 
 ---
 
+## 📄 License
+
+© 2026 moinworksonlocalhost. All rights reserved.
+
+This project is **not open source**. No part of this codebase may be copied, modified, distributed, or used without explicit written permission from the author.
+
+---
+
+<div align="center">
+
+**Built with ❤️ by [Moinworksonlocalhost](https://moinworksonlocalhost.onrender.com/)**
 <p align="center">
   <b>ERP System</b><br>
   Simplifying bills, stock and deliveries for modern businesses.
-</p>
-
-<p align="center">
-  Built with ❤️ using Flutter & Dart
 </p>
