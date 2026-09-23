@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'models/models.dart';
 import 'root_shell/root_shell.dart';
@@ -11,6 +13,19 @@ import 'theme.dart';
 import 'utils/format.dart' hide round2;
 import 'widgets/common.dart';
 import 'widgets/sheets.dart';
+
+// TODO: point these at wherever Bahi_legal.html actually ends up hosted
+// (e.g. GitHub Pages for github.com/Moinkhokhar1/Bahi).
+const String kPrivacyPolicyUrl = 'https://bahiledger.onrender.com/Bahi_legal.html#privacy';
+const String kTermsUrl = 'https://bahiledger.onrender.com/Bahi_legal.html#terms';
+
+Future<void> _openLegalUrl(BuildContext context, String url) async {
+  final uri = Uri.parse(url);
+  final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+  if (!ok && context.mounted) {
+    toastMsg(context, 'Could not open the link');
+  }
+}
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -113,6 +128,7 @@ class _WelcomeScreenState extends State<_WelcomeScreen> {
   final _gstin = TextEditingController();
   String _state = '';
   bool _gstReg = true;
+  bool _agreeToLegal = false;
   bool _busy = false;
 
   @override
@@ -128,6 +144,10 @@ class _WelcomeScreenState extends State<_WelcomeScreen> {
     final name = _biz.text.trim();
     if (name.isEmpty) {
       toastMsg(context, 'Enter your business name');
+      return;
+    }
+    if (!_agreeToLegal) {
+      toastMsg(context, 'Please accept the Privacy Policy and Terms & Conditions to continue');
       return;
     }
     final g = _gstReg ? _gstin.text.trim().toUpperCase() : '';
@@ -150,6 +170,10 @@ class _WelcomeScreenState extends State<_WelcomeScreen> {
   }
 
   Future<void> _sample() async {
+    if (!_agreeToLegal) {
+      toastMsg(context, 'Please accept the Privacy Policy and Terms & Conditions to continue');
+      return;
+    }
     setState(() => _busy = true);
     final app = context.read<AppState>();
     try {
@@ -157,6 +181,55 @@ class _WelcomeScreenState extends State<_WelcomeScreen> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  /// "I agree to the Privacy Policy and Terms & Conditions" with the two
+  /// phrases individually tappable, opening each page in the browser.
+  Widget _legalCheckbox(BuildContext context) {
+    final c = context.bahi;
+    final baseStyle = TextStyle(color: c.muted, fontSize: 13.5, height: 1.4);
+    final linkStyle = baseStyle.copyWith(color: c.blue, fontWeight: FontWeight.w600);
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Checkbox(
+          value: _agreeToLegal,
+          onChanged: (v) => setState(() => _agreeToLegal = v ?? false),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: GestureDetector(
+              onTap: () => setState(() => _agreeToLegal = !_agreeToLegal),
+              behavior: HitTestBehavior.opaque,
+              child: RichText(
+                text: TextSpan(
+                  style: baseStyle,
+                  children: [
+                    const TextSpan(text: 'I agree to the '),
+                    TextSpan(
+                      text: 'Privacy Policy',
+                      style: linkStyle,
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () => _openLegalUrl(context, kPrivacyPolicyUrl),
+                    ),
+                    const TextSpan(text: ' and '),
+                    TextSpan(
+                      text: 'Terms & Conditions',
+                      style: linkStyle,
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () => _openLegalUrl(context, kTermsUrl),
+                    ),
+                    const TextSpan(text: '.'),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -236,15 +309,20 @@ class _WelcomeScreenState extends State<_WelcomeScreen> {
                     }
                   },
                 ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
+              _legalCheckbox(context),
+              const SizedBox(height: 8),
               ElevatedButton(
-                onPressed: _start,
+                onPressed: _agreeToLegal ? _start : null,
                 child: _busy
                     ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2.4))
                     : const Text('Start using Bahi'),
               ),
               const SizedBox(height: 10),
-              OutlinedButton(onPressed: _sample, child: const Text('Try it with demo data first')),
+              OutlinedButton(
+                onPressed: _agreeToLegal ? _sample : null,
+                child: const Text('Try it with demo data first'),
+              ),
             ],
           ),
         ),
