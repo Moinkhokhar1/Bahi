@@ -10,6 +10,7 @@ import '../widgets/sheets.dart';
 import '../widgets/signature_pad.dart';
 import 'invoice_pdf_screen.dart';
 import 'invoice_screen.dart';
+import '../widgets/celebration.dart';
 
 class NewBillScreen extends StatefulWidget {
   final String? shopId;
@@ -36,6 +37,14 @@ class _NewBillScreenState extends State<NewBillScreen> {
   final discountC = TextEditingController();
   final paidC = TextEditingController();
   final notesC = TextEditingController();
+
+  @override
+  void dispose() {
+    discountC.dispose();
+    paidC.dispose();
+    notesC.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -546,6 +555,7 @@ class _NewBillScreenState extends State<NewBillScreen> {
     final short = p != null && num_(it.qty) > p.stock;
     final line = calc.lines.length > i ? calc.lines[i] : null;
     return Container(
+      key: ObjectKey(it),
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(color: c.card, borderRadius: BorderRadius.circular(14), border: Border.all(color: c.line)),
@@ -713,13 +723,25 @@ class _NewBillScreenState extends State<NewBillScreen> {
         attachSig: attachSig,
       );
       if (!mounted) return;
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => InvoiceScreen(id: inv.id)));
-      toastMsg(context, 'Bill ${inv.no} saved');
-      if (deliverNow) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) InvoiceScreen.startDelivery(context, inv.id);
-        });
-      }
+
+      // The Navigator's context outlives this screen, so it is safe to use
+      // after pushReplacement. Using this screen's own context is not.
+      final navContext = Navigator.of(context).context;
+      final shopName = inv.shopName.isNotEmpty ? inv.shopName : 'Walk-in customer';
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => InvoiceScreen(id: inv.id)),
+      );
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!navContext.mounted) return;
+        if (deliverNow) {
+          // signature sheet, then the "Delivered!" celebration
+          InvoiceScreen.startDelivery(navContext, inv.id);
+        } else {
+          showBillSavedCelebration(navContext, billNo: inv.no, shopName: shopName);
+        }
+      });
     } finally {
       if (mounted) setState(() => saving = false);
     }

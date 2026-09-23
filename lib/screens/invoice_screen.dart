@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import '../widgets/celebration.dart';
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart' show Printing;
 import 'package:provider/provider.dart';
@@ -41,7 +41,13 @@ class InvoiceScreen extends StatelessWidget {
     );
     if (sig == null) return; // sheet dismissed
     await app.deliverInvoice(id, recvName: recvName, sigData: sig);
-    if (context.mounted) toastMsg(context, '${inv.no} marked as delivered');
+    if (context.mounted) {
+      await showDeliveredCelebration(
+        context,
+        billNo: inv.no,
+        shopName: inv.shopName.isNotEmpty ? inv.shopName : 'Walk-in customer',
+      );
+    }
   }
 
   @override
@@ -278,7 +284,23 @@ class InvoiceScreen extends StatelessWidget {
 
           // ---- delivery ----
           const SectionHeader('Delivery'),
-          _panel(context, child: _deliveryBody(context, app, inv)),
+          _panel(
+            context,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 350),
+              transitionBuilder: (child, anim) => FadeTransition(
+                opacity: anim,
+                child: ScaleTransition(
+                  scale: Tween(begin: 0.96, end: 1.0).animate(anim),
+                  child: child,
+                ),
+              ),
+              child: KeyedSubtree(
+                key: ValueKey(inv.status),
+                child: _deliveryBody(context, app, inv),
+              ),
+            ),
+          ),
 
           // ---- authorised signature ----
           if (inv.auth != null)
